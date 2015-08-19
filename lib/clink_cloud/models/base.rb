@@ -5,5 +5,6 @@ module ClinkCloud
     include Virtus.model
 
     # Shared by all json responses
+    attribute :links
   end
 end

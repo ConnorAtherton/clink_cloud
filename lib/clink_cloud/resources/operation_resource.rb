@@ -8,7 +8,7 @@ module ClinkCloud
       %i(:pause :power_off :power_on :reboot :shutDown).each do |action|
         action action do
           verb :post
-          path { "/operations/networks/#{account_alias}/servers/#{action.to_s}" }
+          path { "/operations/networks/#{account_alias}/servers/#{action}" }
           # pass in an array of ids
           body { |object| object }
           handler(200) do |response|

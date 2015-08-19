@@ -1,7 +1,7 @@
 module ClinkCloud
   class Operation < Base
     attribute :id
-r   attribute :isQueued
+    attribute :isQueued
     attribute :links
     attribute :errorMessage
   end
