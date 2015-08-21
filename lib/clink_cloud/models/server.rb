@@ -12,5 +12,10 @@ module ClinkCloud
     attribute :type
     attribute :storageType
     attribute :changeInfo
+
+    # only on create
+    attribute :memoryGB
+    attribute :cpu
+    attribute :sourceServerId
   end
 end

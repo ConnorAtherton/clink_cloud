@@ -6,14 +6,6 @@ module ClinkCloud
         fail "Unexpected response status #{response.status}... #{response.body}"
       end
 
-      action :all do
-        verb :get
-        path { "/v2/servers/#{account_alias}/" }
-        handler(200) do |response|
-          ServerMapping.extract_collection(response.body.to_json, :read)
-        end
-      end
-
       action :find do
         verb :get
         path { "/v2/servers/#{account_alias}/:id" }
@@ -37,7 +29,7 @@ module ClinkCloud
         verb :delete
         path { "/v2/servers/#{account_alias}/:id" }
         handler(202) do |response|
-          ServerMapping.extract_single(response.body.to_json, :read)
+          OperationMapping.extract_single(response.body.to_json, :read)
         end
       end
 
@@ -45,8 +37,7 @@ module ClinkCloud
         verb :post
         path { "/v2/servers/#{account_alias}" }
         body { |object| ServerMapping.representation_for(:create, object) }
-        handler(200) do |response|
-          binding.pry
+        handler(202) do |response|
           OperationMapping.extract_single(response.body.to_json, :read)
         end
       end
