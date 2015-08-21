@@ -38,7 +38,17 @@ module ClinkCloud
         path { "/v2/servers/#{account_alias}" }
         body { |object| ServerMapping.representation_for(:create, object) }
         handler(202) do |response|
-          OperationMapping.extract_single(response.body.to_json, :read)
+          # easier to just use a hash
+          res = { 'id' => response.body['server'] }
+          map = { 'status' => 'status_id' }
+
+          response.body['links'].each do |link|
+            key = map[link['rel']]
+            next if key.nil?
+            res[key] = link['id']
+          end
+
+          res
         end
       end
 
