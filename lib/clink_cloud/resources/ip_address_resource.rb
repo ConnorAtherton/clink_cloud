@@ -29,14 +29,6 @@ module ClinkCloud
           response.body
         end
       end
-
-      action :claim do
-        verb :get
-        path { "/v2-experimental/networks/#{account_alias}/:data_center/claim" }
-        handler(200) do |response|
-          NetworkMapping.extract_single(response.body, :read)
-        end
-      end
     end
   end
 end

@@ -7,7 +7,7 @@ module ClinkCloud
     API_VERSION = 'v2'
     API_URL = 'https://api.ctl.io'
 
-    attr_reader :auth_token, :alias
+    attr_reader :auth_token, :alias, :roles, :primary_location
 
     def initialize(options)
       @username = options[:username]
@@ -30,7 +30,14 @@ module ClinkCloud
     # variable when a caller requests the resource.
     def self.resources
       {
-        servers: ServerResource
+        servers: ServerResource,
+        data_centers: DataCenterResource,
+        firewall_policies: FirewallPolicyResource,
+        networks: NetworkResource,
+        operations: OperationResource,
+        statuses: StatusResource,
+        groups: GroupResource,
+        ip_addresses: IpAddressResource
       }
     end
 
@@ -43,7 +50,7 @@ module ClinkCloud
     def method_missing(name, *args, &block)
       if self.class.resources.keys.include?(name)
         unless auth_token
-          raise "Authenticate before using these methods"
+          raise 'Authenticate before using these methods'
         end
 
         resources[name] ||= self.class.resources[name].new(connection: connection,
@@ -64,6 +71,8 @@ module ClinkCloud
       # also set the alias for later on
       @auth_token = res.body['bearerToken']
       @alias = res.body['accountAlias']
+      @roles = res.body['roles']
+      @primary_location = res.body['locationAlias']
     end
 
     private

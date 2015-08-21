@@ -8,6 +8,5 @@ module ClinkCloud
     attribute :netmask
     attribute :type
     attribute :vlan
-    attribute :links
   end
 end

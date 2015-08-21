@@ -12,6 +12,5 @@ module ClinkCloud
     attribute :type
     attribute :storageType
     attribute :changeInfo
-    attribute :links
   end
 end

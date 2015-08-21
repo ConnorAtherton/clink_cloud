@@ -7,6 +7,5 @@ module ClinkCloud
     attribute :destination
     attribute :destinationAccount
     attribute :ports
-    attribute :links
   end
 end

@@ -1,13 +1,12 @@
 module ClinkCloud
-  class OperationMapping
+  class DataCenterMapping
     include Kartograph::DSL
 
     kartograph do
-      mapping Operation
+      mapping DataCenter
 
       property :id, scopes: [:read]
-      property :isQueued, scopes: [:read]
-      property :errorMessage, scopes: [:read]
+      property :name, scopes: [:read]
       property :links, scopes: [:read]
     end
   end
