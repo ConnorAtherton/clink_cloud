@@ -1,6 +1,7 @@
 require 'faraday'
 require 'faraday_middleware'
 require 'pry'
+require 'clink_cloud/errors'
 
 module ClinkCloud
   class Client
@@ -66,7 +67,7 @@ module ClinkCloud
         "/#{API_VERSION}/authentication/login", username: @username, password: @password
       )
 
-      return unless res.success?
+      raise ClinkCloud::Errors::AuthenticationError unless res.success?
 
       # also set the alias for later on
       @auth_token = res.body['bearerToken']
