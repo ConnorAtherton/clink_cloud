@@ -9,6 +9,7 @@ module ClinkCloud
     attribute :serversCount
     attribute :groups
     attribute :changeInfo
+    attribute :parentGroupId
     attribute :customFields
 
     def servers(client = nil)

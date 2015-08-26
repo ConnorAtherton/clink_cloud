@@ -5,7 +5,7 @@ module ClinkCloud
     kartograph do
       mapping Operation
 
-      property :id, scopes: [:read]
+      property :server, scopes: [:read]
       property :isQueued, scopes: [:read]
       property :errorMessage, scopes: [:read]
       property :links, scopes: [:read]

@@ -2,7 +2,6 @@ module ClinkCloud
   class ServerResource < BaseResource
     resources do
       default_handler do |response|
-        binding.pry
         fail "Unexpected response status #{response.status}... #{response.body}"
       end
 
@@ -25,7 +24,7 @@ module ClinkCloud
         end
       end
 
-      action :delete do
+      action :destroy do
         verb :delete
         path { "/v2/servers/#{account_alias}/:id" }
         handler(202) do |response|

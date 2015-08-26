@@ -39,8 +39,36 @@ template_id = client.data_centers.get_deployment_capabilities(id: dc.id)['templa
 # TODO: need a better metric for what to do here
 launch_group_id = dc_group.groups.find { |gr| gr['name'] == "Default Group" }['id']
 puts "launch group #{launch_group_id}"
+puts "data center root group #{dc_group.id}"
 server_name = "test#{SecureRandom.hex(1)}"
 puts "server name #{server_name}"
+
+# do we already have a launchpad group?
+g_name = 'bitnami-launchpad-group'
+already_group = nil
+dc_group.groups.each do |g|
+  puts g['name']
+
+  if g['name'] == g_name
+    already_group = true
+    break
+  end
+end
+
+#
+# Create a new group to use for launching vms in
+#
+unless already_group
+  puts "no group called #{g_name}"
+  group = ClinkCloud::Group.new(
+    name: 'bitnami-launchpad-group',
+    description: 'A brief description',
+    parentGroupId: dc.group_id
+  )
+
+  group = client.groups.create(group)
+  puts "created a group with id #{group.id}"
+end
 
 #
 # Server operations
@@ -49,14 +77,11 @@ puts "server name #{server_name}"
 server = ClinkCloud::Server.new(
   name: server_name,
   # launch in the first dc in the list
-  groupId: launch_group_id,
+  groupId: (group && group.id) || launch_group_id,
   sourceServerId: template_id,
   cpu: '1',
   memoryGB: '1',
   type: 'standard'
-  # only for bare metal servers
-  # configurationId: ''
-  # osType: ''
 )
 
 
@@ -74,12 +99,27 @@ def wait_for(client, status_id)
 end
 
 # actually creating
-server = client.servers.create(server)
-wait_for(client, server['status_id'])
+# server = client.servers.create(server)
+# wait_for(client, server['status_id'])
 
 # Clean up code
+
+# remove all servers
 launch_group = client.groups.find(id: launch_group_id)
 sobjs = launch_group.servers(client)
 sid = launch_group.find_server_id(name: server_name, dc_id: dc.id, account_alias: client.alias)
+
 binding.pry
-launch_group.servers.each { |id| client.servers.delete(id: id) }
+return
+
+# launch_group.servers.each do |id|
+#   s = client.servers.destroy(id: id)
+#   binding.pry
+# end
+
+# remove all groups
+dc_group.groups.each do |g|
+  next unless g['name'] == g_name
+  puts "deleting group #{g['id']}"
+  client.groups.delete(id: g['id'])
+end
