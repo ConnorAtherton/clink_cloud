@@ -47,7 +47,7 @@ puts "server name #{server_name}"
 g_name = 'bitnami-launchpad-group'
 already_group = nil
 dc_group.groups.each do |g|
-  puts g['name']
+  puts g['name'], g['id']
 
   if g['name'] == g_name
     already_group = true
@@ -61,14 +61,18 @@ end
 unless already_group
   puts "no group called #{g_name}"
   group = ClinkCloud::Group.new(
-    name: 'bitnami-launchpad-group',
+    name: g_name,
     description: 'A brief description',
-    parentGroupId: dc.group_id
+    # parentGroupId: dc.group_id
+    parentGroupId: "74d2834bc65de411877f005056882d41"
   )
 
   group = client.groups.create(group)
   puts "created a group with id #{group.id}"
 end
+
+binding.pry
+return
 
 #
 # Server operations
@@ -79,6 +83,8 @@ server = ClinkCloud::Server.new(
   # launch in the first dc in the list
   groupId: (group && group.id) || launch_group_id,
   sourceServerId: template_id,
+  storageType: 'premium',
+  # ttl: Time.now,
   cpu: '1',
   memoryGB: '1',
   type: 'standard'

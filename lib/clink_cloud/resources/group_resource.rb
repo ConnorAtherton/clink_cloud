@@ -23,7 +23,7 @@ module ClinkCloud
         end
       end
 
-      action :delete do
+      action :destroy do
         verb :delete
         path { "/v2/groups/#{account_alias}/:id" }
         handler(202) do |response|

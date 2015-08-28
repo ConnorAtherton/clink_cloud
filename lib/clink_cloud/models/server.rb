@@ -10,12 +10,13 @@ module ClinkCloud
     attribute :status
     attribute :details
     attribute :type
-    attribute :storageType
     attribute :changeInfo
 
     # only on create
     attribute :memoryGB
     attribute :cpu
     attribute :sourceServerId
+    attribute :ttl
+    attribute :storageType
   end
 end
