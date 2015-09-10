@@ -17,6 +17,7 @@ module ClinkCloud
     attribute :cpu
     attribute :sourceServerId
     attribute :ttl
+    attribute :password
     attribute :storageType
   end
 end

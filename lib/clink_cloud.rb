@@ -29,6 +29,7 @@ module ClinkCloud
   autoload :DataCenterMapping, 'clink_cloud/mappings/data_center_mapping'
   autoload :OperationMapping, 'clink_cloud/mappings/operation_mapping'
   autoload :FirewallPolicyMapping, 'clink_cloud/mappings/firewall_policy_mapping'
+  autoload :IpAddressMapping, 'clink_cloud/mappings/ip_address_mapping'
 
   # resources
   autoload :BaseResource, 'clink_cloud/resources/base_resource'
@@ -40,4 +41,10 @@ module ClinkCloud
   autoload :GroupResource, 'clink_cloud/resources/group_resource'
   autoload :OperationResource, 'clink_cloud/resources/operation_resource'
   autoload :StatusResource, 'clink_cloud/resources/status_resource'
+
+  module Errors
+    class Base < RuntimeError; end
+    class ServerError < Base; end
+    class RequestError < Base; end
+  end
 end

@@ -3,5 +3,6 @@ module ClinkCloud
     attribute :internalIPAddress
     attribute :ports
     attribute :sourceRestrictions
+    attribute :publicIP
   end
 end

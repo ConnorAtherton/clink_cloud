@@ -18,7 +18,7 @@ module ClinkCloud
       action :execute_package do
         verb :post
         path { "/v2/operations/#{account_alias}/servers/executePackage" }
-        body { |object| object }
+        body { |object| object.to_json }
         handler(200) do |response|
           Operation.extract_collection(response.body.to_json, :read)
         end
@@ -35,7 +35,12 @@ module ClinkCloud
       action :create do
         verb :post
         path { "/v2/servers/#{account_alias}" }
-        body { |object| ServerMapping.representation_for(:create, object) }
+        body { |object| binding.pry if ENV['CLINK_DEBUG']; ServerMapping.representation_for(:create, object) }
+
+        handler(500) do |response|
+          raise ClinkCloud::Errors::ServerError.new(response.body)
+        end
+
         handler(202) do |response|
           # easier to just use a hash
           res = { 'id' => response.body['server'] }

@@ -40,17 +40,19 @@ template_id = client.data_centers.get_deployment_capabilities(id: dc.id)['templa
 launch_group_id = dc_group.groups.find { |gr| gr['name'] == "Default Group" }['id']
 puts "launch group #{launch_group_id}"
 puts "data center root group #{dc_group.id}"
-server_name = "test#{SecureRandom.hex(1)}"
+server_name = "test06"
 puts "server name #{server_name}"
 
 # do we already have a launchpad group?
 g_name = 'bitnami-launchpad-group'
 already_group = nil
+lp_group_id = nil
 dc_group.groups.each do |g|
   puts g['name'], g['id']
 
   if g['name'] == g_name
     already_group = true
+    lp_group_id = g['id']
     break
   end
 end
@@ -67,29 +69,44 @@ unless already_group
     parentGroupId: "74d2834bc65de411877f005056882d41"
   )
 
-  group = client.groups.create(group)
-  puts "created a group with id #{group.id}"
+  # group = client.groups.create(group)
+  # puts "created a group with id #{group.id}"
+else
+  # delete the launchpad group
+  puts 'deleting the launchpad group'
+  client.groups.destroy(id: lp_group_id)
 end
-
-binding.pry
-return
 
 #
 # Server operations
 #
 # LET'S CREATE A SERVER!!
-server = ClinkCloud::Server.new(
+server = {
   name: server_name,
   # launch in the first dc in the list
   groupId: (group && group.id) || launch_group_id,
   sourceServerId: template_id,
   storageType: 'premium',
-  # ttl: Time.now,
+  # what is the correct format for this
+  # ttl: 'Sat, 29 Aug 2015 03:22:37 UTC +00:00',
+  ttl: nil,
   cpu: '1',
   memoryGB: '1',
-  type: 'standard'
-)
+  type: 'standard',
+  # the call fails if the password is not strong enough
+  password: '1nZoODUD'
+}
+server = ClinkCloud::Server.new(server)
 
+# server_obj = {
+#   name: name,
+#   groupId: group_id,
+#   sourceServerId: temporary_image_id,
+#   cpu: num_cpus.to_s,
+#   storageType: disk_type.to_s,
+#   memoryGB: memory.to_s,
+#   type: 'standard'
+# }
 
 def wait_for(client, status_id)
   tries = 0
@@ -108,24 +125,58 @@ end
 # server = client.servers.create(server)
 # wait_for(client, server['status_id'])
 
+# fetch the first server we have in the group
+launch_group = client.groups.find(id: launch_group_id)
+sobjs = launch_group.servers(client)
+server_id_ip = sobjs.first.id
+ip_status = nil
+
+# Try adding a public ip if we have a server
+# NOTE: port can be "tcp", "udp", or "icmp".
+# if server_id_ip
+#   ip_status = client.ip_addresses.create(
+#     server_id: sobjs.first.id,
+#     ports: [
+#       {
+#         'protocol' => 'TCP',
+#         'port' => 80
+#       }
+#     ]
+#   )
+# end
+
+###
+#
 # Clean up code
+#
+###
 
 # remove all servers
 launch_group = client.groups.find(id: launch_group_id)
 sobjs = launch_group.servers(client)
 sid = launch_group.find_server_id(name: server_name, dc_id: dc.id, account_alias: client.alias)
 
-binding.pry
-return
+sobjs.each do |obj|
+  id = obj.id
 
-# launch_group.servers.each do |id|
-#   s = client.servers.destroy(id: id)
-#   binding.pry
-# end
+  if obj.status == 'running'
+    puts "shutting down #{id} instead of destroying"
+    client.operations.powerOff(id: id)
+    next
+  end
+
+  unless obj.status == 'queuedForDelete'
+    puts "destroying server #{id}"
+    client.servers.destroy(id: id)
+    next
+  end
+
+  puts "server #{id} is already queued for deletion"
+end
 
 # remove all groups
 dc_group.groups.each do |g|
   next unless g['name'] == g_name
   puts "deleting group #{g['id']}"
-  client.groups.delete(id: g['id'])
+  client.groups.destroy(id: g['id'])
 end

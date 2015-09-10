@@ -5,6 +5,17 @@ module ClinkCloud
         fail "Unexpected response status #{response.status}... #{response.body}"
       end
 
+      action :create do
+        verb :post
+        path { "/v2/servers/#{account_alias}/:server_id/publicIPAddresses/" }
+        # TODO: this is hacky
+        body { |object| object.delete(:server_id); object.to_json}
+        handler(202) do |response|
+          # Just return the status
+          response.body
+        end
+      end
+
       action :update do
         verb :put
         path { "/v2/servers/#{account_alias}/:server_id/publicIPAddresses/:id" }
