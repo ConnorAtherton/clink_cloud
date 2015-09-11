@@ -122,12 +122,20 @@ def wait_for(client, status_id)
 end
 
 # actually creating
-# server = client.servers.create(server)
-# wait_for(client, server['status_id'])
+server = client.servers.create(server)
+wait_for(client, server['status_id'])
 
 # fetch the first server we have in the group
 launch_group = client.groups.find(id: launch_group_id)
 sobjs = launch_group.servers(client)
+
+#
+# Fetch correct server object
+server_id = sobjs.first.id
+operation = client.operations.powerOn(server_id)
+binding.pry
+return
+
 server_id_ip = sobjs.first.id
 ip_status = nil
 
@@ -156,27 +164,27 @@ launch_group = client.groups.find(id: launch_group_id)
 sobjs = launch_group.servers(client)
 sid = launch_group.find_server_id(name: server_name, dc_id: dc.id, account_alias: client.alias)
 
-sobjs.each do |obj|
-  id = obj.id
+# sobjs.each do |obj|
+#   id = obj.id
 
-  if obj.status == 'running'
-    puts "shutting down #{id} instead of destroying"
-    client.operations.powerOff(id: id)
-    next
-  end
+#   if obj.status == 'running'
+#     puts "shutting down #{id} instead of destroying"
+#     client.operations.powerOff(id: id)
+#     next
+#   end
 
-  unless obj.status == 'queuedForDelete'
-    puts "destroying server #{id}"
-    client.servers.destroy(id: id)
-    next
-  end
+#   unless obj.status == 'queuedForDelete'
+#     puts "destroying server #{id}"
+#     client.servers.destroy(id: id)
+#     next
+#   end
 
-  puts "server #{id} is already queued for deletion"
-end
+#   puts "server #{id} is already queued for deletion"
+# end
 
 # remove all groups
-dc_group.groups.each do |g|
-  next unless g['name'] == g_name
-  puts "deleting group #{g['id']}"
-  client.groups.destroy(id: g['id'])
-end
+# dc_group.groups.each do |g|
+#   next unless g['name'] == g_name
+#   puts "deleting group #{g['id']}"
+#   client.groups.destroy(id: g['id'])
+# end

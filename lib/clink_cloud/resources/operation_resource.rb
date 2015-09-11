@@ -12,8 +12,12 @@ module ClinkCloud
           path { "/v2/operations/#{account_alias}/servers/#{action}" }
           # pass in an array of ids or single id string
           body { |object| object.is_a?(Array) ? object : [object] }
+
+          handler(404) do |response|
+            raise ClinkCloud::Errors::RersourceNotFoundError.new(response.body)
+          end
+
           handler(200) do |response|
-            binding.pry
             OperationMapping.extract_collection(response.body.to_json, :read)
           end
         end

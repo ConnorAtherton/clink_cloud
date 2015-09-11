@@ -8,6 +8,11 @@ module ClinkCloud
       action :find do
         verb :get
         path { "/v2/servers/#{account_alias}/:id" }
+
+        handler(404) do |response|
+          raise ClinkCloud::Errors::RersourceNotFoundError.new(response.body)
+        end
+
         handler(200) do |response|
           ServerMapping.extract_single(response.body.to_json, :read)
         end
