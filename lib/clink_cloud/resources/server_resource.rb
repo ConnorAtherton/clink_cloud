@@ -10,7 +10,7 @@ module ClinkCloud
         path { "/v2/servers/#{account_alias}/:id" }
 
         handler(404) do |response|
-          raise ClinkCloud::Errors::RersourceNotFoundError.new(response.body)
+          raise ClinkCloud::Errors::ResourceNotFoundError.new(response.body)
         end
 
         handler(200) do |response|

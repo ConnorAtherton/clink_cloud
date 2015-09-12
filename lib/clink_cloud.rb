@@ -12,6 +12,9 @@ module ClinkCloud
   # client
   autoload :Client, 'clink_cloud/client'
 
+  # Errors
+  autoload :Errors, 'clink_cloud/errors'
+
   # models
   autoload :Base, 'clink_cloud/models/base'
   autoload :Server, 'clink_cloud/models/server'
@@ -41,10 +44,4 @@ module ClinkCloud
   autoload :GroupResource, 'clink_cloud/resources/group_resource'
   autoload :OperationResource, 'clink_cloud/resources/operation_resource'
   autoload :StatusResource, 'clink_cloud/resources/status_resource'
-
-  module Errors
-    class Base < RuntimeError; end
-    class ServerError < Base; end
-    class RequestError < Base; end
-  end
 end
