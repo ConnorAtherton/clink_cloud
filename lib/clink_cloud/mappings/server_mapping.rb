@@ -22,6 +22,9 @@ module ClinkCloud
       property :memoryGB, scopes: [:create]
       property :cpu, scopes: [:create]
       property :password, scopes: [:create]
+      property :password, scopes: [:create]
+      property :password, scopes: [:create]
+      property :packages, scopes: [:create]
       property :sourceServerId, scopes: [:create]
     end
   end

@@ -10,7 +10,7 @@ module ClinkCloud
         path { "/v2/servers/#{account_alias}/:id" }
 
         handler(404) do |response|
-          raise ClinkCloud::Errors::ResourceNotFoundError.new(response.body)
+          fail ClinkCloud::Errors::ResourceNotFoundError, response.body
         end
 
         handler(200) do |response|
@@ -23,7 +23,16 @@ module ClinkCloud
       action :execute_package do
         verb :post
         path { "/v2/operations/#{account_alias}/servers/executePackage" }
-        body { |object| object.to_json }
+        body(&:to_json)
+        handler(200) do |response|
+          Operation.extract_collection(response.body.to_json, :read)
+        end
+      end
+
+      action :get_packages do
+        verb :get
+        path { "/v2/operations/#{account_alias}/servers/executePackage" }
+        body(&:to_json)
         handler(200) do |response|
           Operation.extract_collection(response.body.to_json, :read)
         end
@@ -43,7 +52,11 @@ module ClinkCloud
         body { |object| binding.pry if ENV['CLINK_DEBUG']; ServerMapping.representation_for(:create, object) }
 
         handler(500) do |response|
-          raise ClinkCloud::Errors::ServerError.new(response.body)
+          fail ClinkCloud::Errors::InternalError, response.body
+        end
+
+        handler(400) do |response|
+          fail ClinkCloud::Errors::InvalidRequestError, response.body
         end
 
         handler(202) do |response|

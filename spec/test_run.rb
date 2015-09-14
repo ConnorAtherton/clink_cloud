@@ -6,6 +6,7 @@ require 'pry'
 # create a client
 client = ClinkCloud::Client.new(username: ARGV.shift, password: ARGV.shift)
 
+
 "List all servers running"
 # servers = client.servers.all
 
@@ -85,11 +86,24 @@ server = {
   name: server_name,
   # launch in the first dc in the list
   groupId: (group && group.id) || launch_group_id,
-  sourceServerId: template_id,
+  sourceServerId: 'UBUNTU-14-64-TEMPLATE',
   storageType: 'premium',
   # what is the correct format for this
   # ttl: 'Sat, 29 Aug 2015 03:22:37 UTC +00:00',
-  ttl: nil,
+  packages: [
+    {
+      # Install bitnami wordpress
+      # TODO: id
+      # packageId: '3dccadc2-9b51-421e-92a4-ee86abd41b35',
+      # TODO: uuid
+      packageId: '3eba43d7-de2f-4713-a647-b26fba6fea31',
+      # NOTE:  The password is not sufficiently strong. (ERROR)
+      parameters: {
+        'T3.bitnami.base_password' => '1nZoODUD!?'
+      }
+    }
+  ],
+  ttl: "2015-09-15T02:11:37Z",
   cpu: '1',
   memoryGB: '1',
   type: 'standard',
@@ -125,6 +139,8 @@ end
 server = client.servers.create(server)
 wait_for(client, server['status_id'])
 
+binding.pry
+
 # fetch the first server we have in the group
 launch_group = client.groups.find(id: launch_group_id)
 sobjs = launch_group.servers(client)
@@ -132,9 +148,6 @@ sobjs = launch_group.servers(client)
 #
 # Fetch correct server object
 server_id = sobjs.first.id
-operation = client.operations.powerOn(server_id)
-binding.pry
-return
 
 server_id_ip = sobjs.first.id
 ip_status = nil
