@@ -13,6 +13,7 @@ module ClinkCloud
     def initialize(options)
       @username = options[:username]
       @password = options[:password]
+      @auth_token = options[:token]
 
       authenticate unless auth_token
     end
