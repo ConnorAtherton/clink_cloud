@@ -14,6 +14,7 @@ module ClinkCloud
       @username = options[:username]
       @password = options[:password]
       @auth_token = options[:token]
+      @alias = options[:alias]
 
       authenticate unless auth_token
     end
