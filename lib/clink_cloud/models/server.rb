@@ -16,6 +16,7 @@ module ClinkCloud
     attribute :memoryGB
     attribute :cpu
     attribute :sourceServerId
+    attribute :additionalDisks
     attribute :ttl
     attribute :packages
     attribute :password
