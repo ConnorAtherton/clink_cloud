@@ -1,6 +1,5 @@
 require 'faraday'
 require 'faraday_middleware'
-require 'pry'
 require 'clink_cloud/errors'
 
 module ClinkCloud

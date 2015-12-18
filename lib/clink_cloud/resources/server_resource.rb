@@ -49,7 +49,7 @@ module ClinkCloud
       action :create do
         verb :post
         path { "/v2/servers/#{account_alias}" }
-        body { |object| binding.pry if ENV['CLINK_DEBUG']; ServerMapping.representation_for(:create, object) }
+        body { |object| ServerMapping.representation_for(:create, object) }
 
         handler(500) do |response|
           fail ClinkCloud::Errors::InternalError, response.body
